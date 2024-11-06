@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  mmmovie
 //
-//  Created by Kristian Emil on 29/10/2024.
+//  Created by Kristian Emil on 06/11/2024.
 //
 
 import SwiftUI
@@ -10,11 +10,10 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
+            Image(systemName: "pin")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Hello, CS50!")
-            Text("Hello, CS50!")
+            Text("Hello, Shimoda!")
         }
         .padding()
     }

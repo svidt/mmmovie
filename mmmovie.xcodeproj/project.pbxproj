@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		20FC00482CD0BB4300815CF0 /* mmmovie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mmmovie.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		20B6BC202CDB4A3F004E1A2A /* mmmovie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mmmovie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		20FC004A2CD0BB4300815CF0 /* mmmovie */ = {
+		20B6BC222CDB4A3F004E1A2A /* mmmovie */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = mmmovie;
 			sourceTree = "<group>";
@@ -19,7 +19,7 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		20FC00452CD0BB4300815CF0 /* Frameworks */ = {
+		20B6BC1D2CDB4A3F004E1A2A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -29,18 +29,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		20FC003F2CD0BB4300815CF0 = {
+		20B6BC172CDB4A3F004E1A2A = {
 			isa = PBXGroup;
 			children = (
-				20FC004A2CD0BB4300815CF0 /* mmmovie */,
-				20FC00492CD0BB4300815CF0 /* Products */,
+				20B6BC222CDB4A3F004E1A2A /* mmmovie */,
+				20B6BC212CDB4A3F004E1A2A /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		20FC00492CD0BB4300815CF0 /* Products */ = {
+		20B6BC212CDB4A3F004E1A2A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				20FC00482CD0BB4300815CF0 /* mmmovie.app */,
+				20B6BC202CDB4A3F004E1A2A /* mmmovie.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,64 +48,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		20FC00472CD0BB4300815CF0 /* mmmovie */ = {
+		20B6BC1F2CDB4A3F004E1A2A /* mmmovie */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 20FC00562CD0BB4400815CF0 /* Build configuration list for PBXNativeTarget "mmmovie" */;
+			buildConfigurationList = 20B6BC2E2CDB4A3F004E1A2A /* Build configuration list for PBXNativeTarget "mmmovie" */;
 			buildPhases = (
-				20FC00442CD0BB4300815CF0 /* Sources */,
-				20FC00452CD0BB4300815CF0 /* Frameworks */,
-				20FC00462CD0BB4300815CF0 /* Resources */,
+				20B6BC1C2CDB4A3F004E1A2A /* Sources */,
+				20B6BC1D2CDB4A3F004E1A2A /* Frameworks */,
+				20B6BC1E2CDB4A3F004E1A2A /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				20FC004A2CD0BB4300815CF0 /* mmmovie */,
+				20B6BC222CDB4A3F004E1A2A /* mmmovie */,
 			);
 			name = mmmovie;
 			packageProductDependencies = (
 			);
 			productName = mmmovie;
-			productReference = 20FC00482CD0BB4300815CF0 /* mmmovie.app */;
+			productReference = 20B6BC202CDB4A3F004E1A2A /* mmmovie.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		20FC00402CD0BB4300815CF0 /* Project object */ = {
+		20B6BC182CDB4A3F004E1A2A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
 				TargetAttributes = {
-					20FC00472CD0BB4300815CF0 = {
-						CreatedOnToolsVersion = 16.0;
+					20B6BC1F2CDB4A3F004E1A2A = {
+						CreatedOnToolsVersion = 16.1;
 					};
 				};
 			};
-			buildConfigurationList = 20FC00432CD0BB4300815CF0 /* Build configuration list for PBXProject "mmmovie" */;
+			buildConfigurationList = 20B6BC1B2CDB4A3F004E1A2A /* Build configuration list for PBXProject "mmmovie" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 20FC003F2CD0BB4300815CF0;
+			mainGroup = 20B6BC172CDB4A3F004E1A2A;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 20FC00492CD0BB4300815CF0 /* Products */;
+			productRefGroup = 20B6BC212CDB4A3F004E1A2A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				20FC00472CD0BB4300815CF0 /* mmmovie */,
+				20B6BC1F2CDB4A3F004E1A2A /* mmmovie */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		20FC00462CD0BB4300815CF0 /* Resources */ = {
+		20B6BC1E2CDB4A3F004E1A2A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -115,7 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		20FC00442CD0BB4300815CF0 /* Sources */ = {
+		20B6BC1C2CDB4A3F004E1A2A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -125,7 +125,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		20FC00542CD0BB4400815CF0 /* Debug */ = {
+		20B6BC2C2CDB4A3F004E1A2A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -177,7 +177,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -188,7 +188,7 @@
 			};
 			name = Debug;
 		};
-		20FC00552CD0BB4400815CF0 /* Release */ = {
+		20B6BC2D2CDB4A3F004E1A2A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -234,7 +234,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -244,7 +244,7 @@
 			};
 			name = Release;
 		};
-		20FC00572CD0BB4400815CF0 /* Debug */ = {
+		20B6BC2F2CDB4A3F004E1A2A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -273,7 +273,7 @@
 			};
 			name = Debug;
 		};
-		20FC00582CD0BB4400815CF0 /* Release */ = {
+		20B6BC302CDB4A3F004E1A2A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -305,25 +305,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		20FC00432CD0BB4300815CF0 /* Build configuration list for PBXProject "mmmovie" */ = {
+		20B6BC1B2CDB4A3F004E1A2A /* Build configuration list for PBXProject "mmmovie" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				20FC00542CD0BB4400815CF0 /* Debug */,
-				20FC00552CD0BB4400815CF0 /* Release */,
+				20B6BC2C2CDB4A3F004E1A2A /* Debug */,
+				20B6BC2D2CDB4A3F004E1A2A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		20FC00562CD0BB4400815CF0 /* Build configuration list for PBXNativeTarget "mmmovie" */ = {
+		20B6BC2E2CDB4A3F004E1A2A /* Build configuration list for PBXNativeTarget "mmmovie" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				20FC00572CD0BB4400815CF0 /* Debug */,
-				20FC00582CD0BB4400815CF0 /* Release */,
+				20B6BC2F2CDB4A3F004E1A2A /* Debug */,
+				20B6BC302CDB4A3F004E1A2A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 20FC00402CD0BB4300815CF0 /* Project object */;
+	rootObject = 20B6BC182CDB4A3F004E1A2A /* Project object */;
 }
