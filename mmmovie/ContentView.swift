@@ -8,15 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject private var movieManager = MovieManager.shared
+    
     var body: some View {
-        VStack {
-            Image(systemName: "pin")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, Shimoda!")
-            Text("What's going on")
+        TabView {
+            MoviesHomeView()
+                .tabItem {
+                    Label("Movies", systemImage: "film")
+                }
+            
+            FavoritesView()
+                .tabItem {
+                    Label("Favorites", systemImage: "heart")
+                }
         }
-        .padding()
     }
 }
 
