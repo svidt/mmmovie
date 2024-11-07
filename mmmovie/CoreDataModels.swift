@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 // MARK: - Collection Entity
-public class CollectionEntity: NSManagedObject {
+public class CollectionEntity: NSManagedObject, Identifiable {
     public static let entityName = "CollectionEntity"
 }
 
@@ -35,10 +35,35 @@ extension CollectionEntity {
         guard let movies = movies else { return false }
         return movies.contains(movie)
     }
+    
+    // Thread-safe relationship management
+    func addToMovies(_ movie: MovieEntity) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.addToMovies(movie)
+            }
+            return
+        }
+        var updatedMovies = movies ?? Set<MovieEntity>()
+        updatedMovies.insert(movie)
+        movies = updatedMovies
+    }
+    
+    func removeFromMovies(_ movie: MovieEntity) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.removeFromMovies(movie)
+            }
+            return
+        }
+        guard var updatedMovies = movies else { return }
+        updatedMovies.remove(movie)
+        movies = updatedMovies
+    }
 }
 
 // MARK: - Movie Entity
-public class MovieEntity: NSManagedObject {
+public class MovieEntity: NSManagedObject, Identifiable {
     public static let entityName = "MovieEntity"
 }
 
@@ -77,7 +102,6 @@ extension MovieEntity {
         return URL(string: "https://image.tmdb.org/t/p/original\(backdropPath)")
     }
     
-    // Format release date
     var formattedReleaseDate: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -88,38 +112,33 @@ extension MovieEntity {
         return releaseDate
     }
     
-    // Format vote average
     var formattedRating: String {
         String(format: "%.1f", voteAverage)
     }
-}
-
-// MARK: - Relationship Management Extensions
-extension MovieEntity {
+    
+    // Thread-safe relationship management
     func addToCollections(_ collection: CollectionEntity) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.addToCollections(collection)
+            }
+            return
+        }
         var updatedCollections = collections ?? Set<CollectionEntity>()
         updatedCollections.insert(collection)
         collections = updatedCollections
     }
     
     func removeFromCollections(_ collection: CollectionEntity) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.removeFromCollections(collection)
+            }
+            return
+        }
         guard var updatedCollections = collections else { return }
         updatedCollections.remove(collection)
         collections = updatedCollections
-    }
-}
-
-extension CollectionEntity {
-    func addToMovies(_ movie: MovieEntity) {
-        var updatedMovies = movies ?? Set<MovieEntity>()
-        updatedMovies.insert(movie)
-        movies = updatedMovies
-    }
-    
-    func removeFromMovies(_ movie: MovieEntity) {
-        guard var updatedMovies = movies else { return }
-        updatedMovies.remove(movie)
-        movies = updatedMovies
     }
 }
 
@@ -137,12 +156,18 @@ class PersistenceController {
         
         container.loadPersistentStores { description, error in
             if let error = error {
-                fatalError("Error: \(error.localizedDescription)")
+                print("Core Data failed to load: \(error.localizedDescription)")
+                debugPrint("Core Data error details: \(error)")
             }
         }
         
         container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         container.viewContext.automaticallyMergesChangesFromParent = true
+        
+        // Enable persistent history tracking
+        if let description = container.persistentStoreDescriptions.first {
+            description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        }
     }
     
     func save() {
@@ -151,42 +176,34 @@ class PersistenceController {
             do {
                 try context.save()
             } catch {
-                print("Error saving context: \(error)")
+                let nsError = error as NSError
+                print("Error saving context: \(nsError.localizedDescription)")
+                print("Error details: \(nsError.userInfo)")
             }
         }
     }
-}
-
-// MARK: - TMDB Models
-struct TMDBMovie: Codable {
-    let id: Int
-    let title: String
-    let overview: String
-    let posterPath: String?
-    let backdropPath: String?
-    let releaseDate: String
-    let voteAverage: Double
-    let genreIds: [Int]
     
-    enum CodingKeys: String, CodingKey {
-        case id, title, overview
-        case posterPath = "poster_path"
-        case backdropPath = "backdrop_path"
-        case releaseDate = "release_date"
-        case voteAverage = "vote_average"
-        case genreIds = "genre_ids"
-    }
-}
-
-struct TMDBResponse: Codable {
-    let page: Int
-    let results: [TMDBMovie]
-    let totalPages: Int
-    let totalResults: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case page, results
-        case totalPages = "total_pages"
-        case totalResults = "total_results"
+    func resetAllData() {
+        let context = container.viewContext
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest()
+        fetchRequest.entity = NSEntityDescription.entity(forEntityName: "MovieEntity", in: context)
+        fetchRequest.includesPropertyValues = false
+        
+        do {
+            let movies = try context.fetch(fetchRequest) as! [NSManagedObject]
+            for movie in movies {
+                context.delete(movie)
+            }
+            
+            fetchRequest.entity = NSEntityDescription.entity(forEntityName: "CollectionEntity", in: context)
+            let collections = try context.fetch(fetchRequest) as! [NSManagedObject]
+            for collection in collections {
+                context.delete(collection)
+            }
+            
+            try context.save()
+        } catch {
+            print("Error resetting data: \(error)")
+        }
     }
 }

@@ -16,31 +16,37 @@ class MovieManager: ObservableObject {
     // MARK: - Properties
     private let persistenceController: PersistenceController
     private var context: NSManagedObjectContext
-    private let tmdbAPIKey = "9d702fdc5b6e0206e3e9d491593621d3"
     
     // Published properties
-    @Published var watchlist: [MovieEntity] = []
-    @Published var favorites: [MovieEntity] = []
-    @Published var collections: [CollectionEntity] = []
-    @Published var searchResults: [TMDBMovie] = []
-    @Published var isLoading = false
+    @Published private(set) var watchlist: [MovieEntity] = []
+    @Published private(set) var favorites: [MovieEntity] = []
+    @Published private(set) var collections: [CollectionEntity] = []
+    @Published private(set) var searchResults: [TMDBMovie] = []
+    @Published private(set) var isLoading = false
     @Published var errorMessage: String?
     
     // MARK: - Initialization
     private init() {
         self.persistenceController = PersistenceController.shared
         self.context = persistenceController.container.viewContext
-        fetchAllData()
+        // Configure context
+        context.mergePolicy = NSMergePolicy(merge: .errorMergePolicyType)
+        context.automaticallyMergesChangesFromParent = true
+        
+        // Initial fetch
+        Task { @MainActor in
+            await fetchAllData()
+        }
     }
     
-    // MARK: - Data Fetching
-    private func fetchAllData() {
-        fetchWatchlist()
-        fetchFavorites()
-        fetchCollections()
+    // MARK: - Core Data Fetching
+    private func fetchAllData() async {
+        await fetchWatchlist()
+        await fetchFavorites()
+        await fetchCollections()
     }
     
-    private func fetchWatchlist() {
+    private func fetchWatchlist() async {
         let request = MovieEntity.fetchRequest()
         request.predicate = NSPredicate(format: "isInWatchlist == YES")
         request.sortDescriptors = [NSSortDescriptor(keyPath: \MovieEntity.addedDate, ascending: false)]
@@ -53,7 +59,7 @@ class MovieManager: ObservableObject {
         }
     }
     
-    private func fetchFavorites() {
+    private func fetchFavorites() async {
         let request = MovieEntity.fetchRequest()
         request.predicate = NSPredicate(format: "isFavorite == YES")
         request.sortDescriptors = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
@@ -66,7 +72,7 @@ class MovieManager: ObservableObject {
         }
     }
     
-    private func fetchCollections() {
+    private func fetchCollections() async {
         let request = CollectionEntity.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \CollectionEntity.name, ascending: true)]
         
@@ -79,7 +85,7 @@ class MovieManager: ObservableObject {
     }
     
     // MARK: - Collection Management
-    func createCollection(name: String, colorHex: String) -> CollectionEntity? {
+    func createCollection(name: String, colorHex: String) async -> CollectionEntity? {
         let entity = NSEntityDescription.entity(forEntityName: "CollectionEntity", in: context)!
         let collection = CollectionEntity(entity: entity, insertInto: context)
         collection.id = UUID()
@@ -89,7 +95,7 @@ class MovieManager: ObservableObject {
         
         do {
             try context.save()
-            fetchCollections()
+            await fetchCollections()
             return collection
         } catch {
             print("Error creating collection: \(error)")
@@ -98,12 +104,12 @@ class MovieManager: ObservableObject {
         }
     }
     
-    func deleteCollection(_ collection: CollectionEntity) {
+    func deleteCollection(_ collection: CollectionEntity) async {
         context.delete(collection)
         
         do {
             try context.save()
-            fetchCollections()
+            await fetchCollections()
         } catch {
             print("Error deleting collection: \(error)")
             errorMessage = "Failed to delete collection"
@@ -111,8 +117,7 @@ class MovieManager: ObservableObject {
     }
     
     // MARK: - Movie Management
-    func addMovie(_ tmdbMovie: TMDBMovie, toWatchlist: Bool = false) -> MovieEntity? {
-        // Check if movie already exists
+    func addMovie(_ tmdbMovie: TMDBMovie, toWatchlist: Bool = false) async -> MovieEntity? {
         let request = MovieEntity.fetchRequest()
         request.predicate = NSPredicate(format: "id == %d", tmdbMovie.id)
         
@@ -122,11 +127,10 @@ class MovieManager: ObservableObject {
                     existingMovie.isInWatchlist = true
                 }
                 try context.save()
-                fetchAllData()
+                await fetchAllData()
                 return existingMovie
             }
             
-            // Create new movie if it doesn't exist
             let entity = NSEntityDescription.entity(forEntityName: "MovieEntity", in: context)!
             let movie = MovieEntity(entity: entity, insertInto: context)
             
@@ -143,7 +147,7 @@ class MovieManager: ObservableObject {
             movie.personalRating = 0
             
             try context.save()
-            fetchAllData()
+            await fetchAllData()
             return movie
         } catch {
             print("Error adding movie: \(error)")
@@ -152,27 +156,51 @@ class MovieManager: ObservableObject {
         }
     }
     
-    func toggleWatchlist(_ movie: MovieEntity) {
+    func toggleWatchlist(_ movie: MovieEntity) async {
         movie.isInWatchlist.toggle()
         
         do {
             try context.save()
-            fetchAllData()
+            await fetchAllData()
         } catch {
             print("Error toggling watchlist: \(error)")
             errorMessage = "Failed to update watchlist"
         }
     }
     
-    func toggleFavorite(_ movie: MovieEntity) {
+    func toggleFavorite(_ movie: MovieEntity) async {
         movie.isFavorite.toggle()
         
         do {
             try context.save()
-            fetchAllData()
+            await fetchAllData()
         } catch {
             print("Error toggling favorite: \(error)")
             errorMessage = "Failed to update favorites"
+        }
+    }
+    
+    func updateMovieRating(_ movie: MovieEntity, rating: Int16) async {
+        movie.personalRating = rating
+        
+        do {
+            try context.save()
+            await fetchAllData()
+        } catch {
+            print("Error updating movie rating: \(error)")
+            errorMessage = "Failed to update movie rating"
+        }
+    }
+    
+    func updateMovieNotes(_ movie: MovieEntity, notes: String) async {
+        movie.personalNotes = notes
+        
+        do {
+            try context.save()
+            await fetchAllData()
+        } catch {
+            print("Error updating movie notes: \(error)")
+            errorMessage = "Failed to update movie notes"
         }
     }
     
@@ -186,18 +214,11 @@ class MovieManager: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
-        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "https://api.themoviedb.org/3/search/movie?api_key=\(tmdbAPIKey)&query=\(encodedQuery)") else {
-            errorMessage = "Invalid search query"
-            return
-        }
-        
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let response = try JSONDecoder().decode(TMDBResponse.self, from: data)
+            let response = try await TMDBClient.shared.searchMovies(query: query)
             searchResults = response.results
         } catch {
-            print("Error searching movies: \(error)")
+            print("Search error: \(error)")
             errorMessage = "Failed to search movies"
             searchResults = []
         }
@@ -207,14 +228,8 @@ class MovieManager: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
-        guard let url = URL(string: "https://api.themoviedb.org/3/trending/movie/week?api_key=\(tmdbAPIKey)") else {
-            errorMessage = "Invalid URL"
-            return
-        }
-        
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let response = try JSONDecoder().decode(TMDBResponse.self, from: data)
+            let response = try await TMDBClient.shared.fetchTrendingMovies()
             searchResults = response.results
         } catch {
             print("Error fetching trending movies: \(error)")
@@ -223,28 +238,16 @@ class MovieManager: ObservableObject {
         }
     }
     
-    // MARK: - Movie Details Management
-    func updateMovieRating(_ movie: MovieEntity, rating: Int16) {
-        movie.personalRating = rating
+    func fetchMovieDetails(id: Int) async -> MovieDetails? {
+        isLoading = true
+        defer { isLoading = false }
         
         do {
-            try context.save()
-            fetchAllData()
+            return try await TMDBClient.shared.fetchMovieDetails(id: id)
         } catch {
-            print("Error updating movie rating: \(error)")
-            errorMessage = "Failed to update movie rating"
-        }
-    }
-    
-    func updateMovieNotes(_ movie: MovieEntity, notes: String) {
-        movie.personalNotes = notes
-        
-        do {
-            try context.save()
-            fetchAllData()
-        } catch {
-            print("Error updating movie notes: \(error)")
-            errorMessage = "Failed to update movie notes"
+            print("Error fetching movie details: \(error)")
+            errorMessage = "Failed to fetch movie details"
+            return nil
         }
     }
 }

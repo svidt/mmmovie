@@ -84,7 +84,9 @@ struct SearchResultRow: View {
             // Add Button
             Button(action: {
                 isAdding = true
-                _ = movieManager.addMovie(movie, toWatchlist: true)
+                Task {
+                    _ = await movieManager.addMovie(movie, toWatchlist: true)
+                }
             }) {
                 Image(systemName: isAdding ? "checkmark.circle.fill" : "plus.circle.fill")
                     .foregroundColor(isAdding ? .green : .blue)
